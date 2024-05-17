@@ -11,9 +11,7 @@ use rattler_conda_types::{
     Channel, ChannelConfig, GenericVirtualPackage, MatchSpec, Platform, PrefixRecord,
     RepoDataRecord,
 };
-use rattler_repodata_gateway::fetch::{
-    CacheResult, DownloadProgress, FetchRepoDataError, FetchRepoDataOptions,
-};
+use rattler_repodata_gateway::fetch::{CacheResult, FetchRepoDataError, FetchRepoDataOptions};
 use rattler_repodata_gateway::sparse::SparseRepoData;
 use rattler_solve::{resolvo::Solver, ChannelPriority, SolverImpl, SolverTask};
 use reqwest_middleware::ClientWithMiddleware;
@@ -120,6 +118,8 @@ pub async fn create_environment(
         pinned_packages: Vec::new(),
         timeout: None,
         channel_priority: ChannelPriority::Strict,
+        exclude_newer: None,
+        strategy: rattler_solve::SolveStrategy::Highest,
     };
 
     // Next, use a solver to solve this specific problem. This provides us with all the operations
@@ -541,10 +541,7 @@ async fn fetch_repo_data_records_with_progress(
         FetchRepoDataOptions {
             ..Default::default()
         },
-        Some(Box::new(move |DownloadProgress { total, bytes }| {
-            download_progress_bar.set_length(total.unwrap_or(bytes));
-            download_progress_bar.set_position(bytes);
-        })),
+        None,
     )
     .await;
 

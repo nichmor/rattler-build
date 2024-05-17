@@ -79,7 +79,7 @@ fn contains_prefix_text(
         // will break either way as C:/ can't be converted
         // to something meaningful in unix either way
         let forward_slash = to_forward_slash_lossy(prefix);
-        let contains_prefix = memchr::memmem::find_iter(mmap.as_ref(), forward_slash.as_ref())
+        let contains_prefix = memchr::memmem::find_iter(mmap.as_ref(), &forward_slash.to_string())
             .next()
             .is_some();
 
